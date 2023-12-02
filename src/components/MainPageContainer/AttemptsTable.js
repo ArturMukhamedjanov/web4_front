@@ -17,7 +17,7 @@ const AttemptsTable = ({attempts}) => {
                         <td>{round(attempt.x)}</td>
                         <td>{round(attempt.y)}</td>
                         <td>{round(attempt.r)}</td>
-                        <td>{attempt.res ? "True" : "False"}</td>
+                        <td>{attempt.res}</td>
                     </tr>
                 );
             })}

@@ -4,7 +4,7 @@ import AttemptForm from './AttemptForm';
 import AttemptsTable from './AttemptsTable';
 import {Link, useNavigate} from 'react-router-dom';
 
-const MainPage = ({serverPort}) => {
+const MainPage = ({serverPort, redirectToLogin}) => {
     const [attempts, setAttempts] = useState([])
     console.log(attempts)
     const updateAttempts = (newAttempts) => {
@@ -15,18 +15,17 @@ const MainPage = ({serverPort}) => {
         return attempts
     }
 
-    const navigate = useNavigate();
 
     const sendLogoutRequest = () => {
         localStorage.clear()
-        navigate("/")
+        redirectToLogin()
     }
 
     return(
         <div className='main-page-block'>
-            <p>
-                <Link className='logout_link' to="/" onClick={sendLogoutRequest}>Log out</Link>
-            </p>
+            <button className="btn btn-block" onClick={sendLogoutRequest}>
+                Log out
+            </button>
             <div className='form-table-box'>
                 <AttemptForm updateAttempts={updateAttempts}  serverPort={serverPort}/>
                 <AttemptsTable attempts={attempts}/>

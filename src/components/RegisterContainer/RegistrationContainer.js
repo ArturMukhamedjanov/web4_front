@@ -3,8 +3,7 @@ import Title from '../Title';
 import { useForm } from "react-hook-form";
 import {Link, useNavigate} from 'react-router-dom';
 
-const RegistrationContainer = ({serverPort}) => {
-    const navigate = useNavigate();
+const RegistrationContainer = ({serverPort, redirectToLogin, redirectToMain} ) => {
 
     const {
         register,
@@ -26,7 +25,7 @@ const RegistrationContainer = ({serverPort}) => {
                 console.log("Got this attempt from server:" + JSON.stringify(registrationResult));
                 if(!registrationResult.token.includes("Логин")){
                     localStorage.setItem('token', registrationResult.token);
-                    navigate('/main', {replace: true});
+                    redirectToMain()
                 } else{
                     alert(registrationResult);
                 }
@@ -70,7 +69,9 @@ const RegistrationContainer = ({serverPort}) => {
 
             <input type="submit" value="Submit" className='btn-block btn' />
 
-            <Link className='swich_link' to="/">Already registered?</Link>
+            <button className="btn btn-block" onClick={redirectToLogin}>
+                Log in
+            </button>
         </form>
     );
 };

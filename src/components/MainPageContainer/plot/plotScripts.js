@@ -18,7 +18,11 @@ const DEFAULT_R = 3;
 let currentR = DEFAULT_R;
 
 const initCanvas = () => {
-    document.querySelector("#plot").innerHTML="";
+    try {
+        document.querySelector("#plot").innerHTML = "";
+    }catch (e) {
+
+    }
     CANVAS = svgjs.SVG()
         .addTo('#plot')
         .size('100%', '100%')
@@ -96,6 +100,9 @@ export const updatePlot = (attemptsArray) => {
 }
 export const drawPlotWithPoints = (attemptsArray) => {
     console.log('Ready to draw plot!');
+    if(attemptsArray.length === 0){
+        return
+    }
     let pointsArray = [];
     attemptsArray.forEach(point => {
         pointsArray.push({
@@ -109,7 +116,7 @@ export const drawPlotWithPoints = (attemptsArray) => {
     scale = countScale(pointsArray);
     let lastPoint = pointsArray[pointsArray.length - 1];
     const r = 3;
-    currentR = r;
+    currentR = 3;
     if(currentR == null){
         currentR = 3
     }
@@ -296,8 +303,8 @@ let drawArea = (r) => {
 
 let drawPoint = (x, y, r, result, pointScale) => {
     let color = result === "True" ? '#0f0' : '#f00';
-    const pointX = (convertX(x));
-    const pointY = convertY(y);
+    const pointX = convertX(x/r*3);
+    const pointY = convertY(y/r * 3);
     CANVAS.circle(pointScale + 1).fill(AREA_COLOR).move(pointX, pointY);
     CANVAS.circle(pointScale).fill(color).move(pointX, pointY);
 }

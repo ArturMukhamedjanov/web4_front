@@ -1,14 +1,10 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import Title from '../Title';
 import { useForm } from "react-hook-form";
-import { useSelector, useDispatch } from 'react-redux';
-import {addAttempt, selectAttempts} from '../../slices/AttemptSlice';
-import { selectToken } from '../../slices/tokenSlice';
-import {drawPlot, drawPlotWithPoints} from "./plot/plotScripts";
+import {drawPlotWithPoints} from "./plot/plotScripts";
 
 const AttemptForm = ({updateAttempts, serverPort}) => {
     const token =  localStorage.getItem("token");
-    const dispatch = useDispatch();
 
     const {
         register,
@@ -45,7 +41,29 @@ const AttemptForm = ({updateAttempts, serverPort}) => {
         );
     };
 
+    const clearAttempts = async (port, token) =>{
+        let url = "http://localhost:"+ port +"/api/clear";
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: token }),
+        });
 
+        if(response.status !== 200){
+            alert("Something went wrong");
+
+        }else {
+            getPointsFromServer(serverPort, token).then((data) => {
+                // Update the state with the received data
+                localStorage.setItem("points", JSON.stringify(data));
+                drawPlotWithPoints(data);
+                updateAttempts(data)
+            });
+        }
+
+    }
     // console.log(watch("example")); you can watch individual input by pass the name of the input
 
     return (
@@ -80,12 +98,16 @@ const AttemptForm = ({updateAttempts, serverPort}) => {
 
 
             <input type="submit" value="Submit" className='btn-block btn' />
+            <button className="btn btn-block" onClick={() => clearAttempts(serverPort, token)}>
+                Clear
+            </button>
         </form>
     );
 
 }
 
 export default AttemptForm;
+
 
 
 let tryToSendAddAttemptRequest = async (port, token, data) => {

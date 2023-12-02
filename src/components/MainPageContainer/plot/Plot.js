@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import {drawPlot, drawPlotAfterClick} from './plotScripts';
-import {  useDispatch } from 'react-redux';
 
 
 const Plot = ({updateAttempts, serverPort}) => {
@@ -9,7 +8,6 @@ const Plot = ({updateAttempts, serverPort}) => {
         attempts = []
     }
     const token =  localStorage.getItem("token");
-    const dispatch = useDispatch();
 
 
     useEffect(() => {
@@ -86,32 +84,36 @@ let tryToSendAddAttemptRequest = async (port, token, data) => {
 }
 
 let getPointsFromServer = async (port, token) => {
-    let url = 'http://localhost:' + port + '/api/getPoints';
-    console.log(
-        'Sending POST request to url: ' +
-        url +
-        '. With token: ' +
-        JSON.stringify(token)
-    );
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: token }),
-    });
-    if(response.status !== 200){
-        return [];
+    try {
+        let url = 'http://localhost:' + port + '/api/getPoints';
+        console.log(
+            'Sending POST request to url: ' +
+            url +
+            '. With token: ' +
+            JSON.stringify(token)
+        );
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token: token}),
+        });
+        if (response.status !== 200) {
+            return [];
+        }
+        if (response === "") {
+            return [];
+        }
+        var json_answ = await response.json();
+        console.log(json_answ)
+        var res = []
+        for (var k in json_answ) {
+            var v = json_answ[k];
+            res.push(v);
+        }
+        return res;
+    }catch (e) {
+        return []
     }
-    if(response == ""){
-        return [];
-    }
-    var json_answ = await response.json();
-    console.log(json_answ)
-    var res = []
-    for(var k in json_answ) {
-        var v = json_answ[k];
-        res.push(v);
-    }
-    return res;
 };

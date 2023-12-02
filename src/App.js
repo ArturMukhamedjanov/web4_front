@@ -6,15 +6,45 @@ import RegistrationPage from './components/RegisterContainer/RegistrationPage';
 import Header from './Header';
 import MainPage from './components/MainPageContainer/MainPage';
 
+
+
 const App = () => {
+
+    const [redirectToMain, setRedirectToMain] = useState(false);
+    const [redirectToRegister, setRedirectToRegister] = useState(false);
+    const [redirectToLogin, setRedirectToLogin] = useState(true);
+
+    const handleRedirectToRegister = () => {
+        setRedirectToRegister(true);
+        setRedirectToLogin(false);
+        setRedirectToMain(false);
+    };
+
+    const handleRedirectToLogin = () => {
+        setRedirectToRegister(false);
+        setRedirectToLogin(true);
+        setRedirectToMain(false);
+    };
+
+    const handleRedirectToMain = () => {
+        setRedirectToRegister(false);
+        setRedirectToLogin(false);
+        setRedirectToMain(true);
+    }
+
     const serverPort = 24750;
     const [loading, setLoading] = useState(true);
-    const [redirectToMain, setRedirectToMain] = useState(false);
 
     useEffect(() => {
         const checkToken = async () => {
             try {
                 const storedToken = localStorage.getItem('token');
+                if(storedToken == null){
+                    setLoading(false)
+                    handleRedirectToLogin()
+                    return
+                }
+
                 if (storedToken) {
                     // Assuming you have an API endpoint for token validation on the server
                     const response = await fetch(`http://localhost:${serverPort}/api/checkToken`, {
@@ -28,19 +58,20 @@ const App = () => {
                     if (response.ok) {
                         // If the server response is successful, set authentication context and redirect to /main
                         setLoading(false);
-                        setRedirectToMain(true);
+                        handleRedirectToMain()
                     } else {
-                        setRedirectToMain(false);
+                        handleRedirectToMain()
                         // If the server response is not successful, stay on the registration page
                         setLoading(false);
                     }
                 } else {
-                    setRedirectToMain(false);
+                    handleRedirectToMain()
                     // If no token is found, stay on the registration page
                     setLoading(false);
                 }
             } catch (error) {
-                setRedirectToMain(false);
+                setLoading(false)
+                handleRedirectToLogin()
                 console.error('Error checking token:', error);
                 setLoading(false);
             }
@@ -49,6 +80,8 @@ const App = () => {
         checkToken();
     }, []);
 
+
+
     if (loading) {
         // You can render a loading spinner or any other loading indicator while checking the token
         return <div>Loading...</div>;
@@ -56,20 +89,22 @@ const App = () => {
 
     return (
         <div className='App'>
-        <Router>
             <Header title="Coordinate checker" />
-            <Routes>
-                {redirectToMain ? (
-                    <Route path="/" element={<Navigate to="/main" replace={true} />} />
-                ) : (
-                    <>
-                        <Route path="/" element={<LoginPage serverPort={serverPort} />} />
-                        <Route path="/register" element={<RegistrationPage serverPort={serverPort} />} />
-                    </>
+            {redirectToMain ? (
+                <MainPage
+                    serverPort={serverPort}
+                    attempts={[]}
+                    redirectToLogin={handleRedirectToLogin}
+                />
+            ) : redirectToRegister ? (
+                <RegistrationPage serverPort={serverPort} redirectToLogin = {handleRedirectToLogin} redirectToMain={handleRedirectToMain}/>
+            ) : (
+                <LoginPage
+                    serverPort={serverPort}
+                    redirectToRegister={handleRedirectToRegister}
+                    redirectToMain={handleRedirectToMain}
+                />
                 )}
-                <Route path="/main" element={<MainPage serverPort={serverPort} attempts={[]} />} />
-            </Routes>
-        </Router>
         </div>
     );
 };
