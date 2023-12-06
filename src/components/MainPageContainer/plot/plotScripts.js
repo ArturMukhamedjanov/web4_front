@@ -20,13 +20,14 @@ let currentR = DEFAULT_R;
 const initCanvas = () => {
     try {
         document.querySelector("#plot").innerHTML = "";
+        CANVAS = svgjs.SVG()
+            .addTo('#plot')
+            .size('100%', '100%')
+            .viewbox(0, 0, WIDTH, HEIGHT);
     }catch (e) {
 
     }
-    CANVAS = svgjs.SVG()
-        .addTo('#plot')
-        .size('100%', '100%')
-        .viewbox(0, 0, WIDTH, HEIGHT);
+
 }
 
 export const drawPlot = (attemptsArray) => {

@@ -72,15 +72,17 @@ const AttemptForm = ({updateAttempts, serverPort}) => {
             {/* <label>X</label> */}
             <p >X:</p>
             <input placeholder='X: from -5 to 3'
-                   {...register("x", {required: true, pattern: /^-?[0-9]+$/i, min: -5, max: 3 })} />
+                   maxLength="5"
+                   {...register("x", {required: true,pattern: /^-?[0-9]+([.,][0-9]{0,3})?$/,  min: -5, max: 3 })} />
             {errors.x && (
                 <p className='error'>X has to be in -5 ... 3</p>
             )}
 
             <p >Y:</p>
             <input placeholder='Y: from -5 to 3'
+                   maxLength="5"
                    defaultValue={-3}
-                   {...register("y", {required: true, pattern: /^-?[0-9]+$/i, min: -5, max: 3 })} />
+                   {...register("y", {required: true,  pattern: /^-?[0-9]+([.,][0-9]{0,3})?$/, min: -5, max: 3 })} />
 
             {errors.y && (
                 <p className='error'> Y has to be in -5 ... 3</p>
@@ -111,6 +113,8 @@ export default AttemptForm;
 
 
 let tryToSendAddAttemptRequest = async (port, token, data) => {
+    data.x = data.x.replace(",", ".");
+    data.y = data.y.replace(",", ".");
     console.log(port);
     let url = "http://localhost:"+ port +"/api/addPoint";
     data.token = token;

@@ -5,6 +5,21 @@ import AttemptsTable from './AttemptsTable';
 import {Link, useNavigate} from 'react-router-dom';
 
 const MainPage = ({serverPort, redirectToLogin}) => {
+
+    const sendLogoutRequest = () => {
+        localStorage.clear()
+        redirectToLogin()
+    }
+    try{
+    sendCheckTokenRequest(serverPort, localStorage.getItem("token")).then((result) => {
+        if(result.status!==200){
+            sendLogoutRequest()
+        }
+    })
+    }catch (e) {
+        sendLogoutRequest()
+    }
+
     const [attempts, setAttempts] = useState([])
     console.log(attempts)
     const updateAttempts = (newAttempts) => {
@@ -16,10 +31,7 @@ const MainPage = ({serverPort, redirectToLogin}) => {
     }
 
 
-    const sendLogoutRequest = () => {
-        localStorage.clear()
-        redirectToLogin()
-    }
+
 
     return(
         <div className='main-page-block'>
@@ -37,3 +49,17 @@ const MainPage = ({serverPort, redirectToLogin}) => {
 
 export default MainPage;
 
+
+let sendCheckTokenRequest = async (port ,token) => {
+    let url = 'http://localhost:' + port + '/api/checkToken';
+    console.log('Sending POST request to url: ' + url);
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token: token }),
+    });
+
+    return response;
+};

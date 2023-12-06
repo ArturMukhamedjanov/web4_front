@@ -14,9 +14,9 @@ const AttemptsTable = ({attempts}) => {
                 return (
                     // id={i++} key={i++}
                     <tr key={index}>
-                        <td>{round(attempt.x)}</td>
-                        <td>{round(attempt.y)}</td>
-                        <td>{round(attempt.r)}</td>
+                        <td>{attempt.x}</td>
+                        <td>{attempt.y}</td>
+                        <td>{attempt.r}</td>
                         <td>{attempt.res}</td>
                     </tr>
                 );
